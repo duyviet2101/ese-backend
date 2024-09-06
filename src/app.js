@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 // import { checkOverload } from './helpers/check.connect';
 import routes from './routes/index.js';
 import {initializeMongoConnection} from "./databases/mongodb.js";
+import { initializeElastic } from './databases/elasticsearch.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({
 
 //! init db
 initializeMongoConnection();
+initializeElastic();
 //! end init db
 
 //! init routes

@@ -1,0 +1,192 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "autocomplete_filter": {
+          "type": "edge_ngram",
+          "min_gram": 1,
+          "max_gram": 20
+        }
+      },
+      "analyzer": {
+        "autocomplete": {
+          "type": "custom",
+          "tokenizer": "icu_tokenizer",
+          "filter": [
+            "lowercase",
+            "icu_normalizer",
+            "icu_folding",
+            "autocomplete_filter"
+          ]
+        },
+        "text_default": {
+          "type": "custom",
+          "tokenizer": "icu_tokenizer",
+          "filter": [
+            "lowercase",
+            "icu_folding",
+            "icu_normalizer"
+          ],
+          "char_filter": [
+            "html_strip"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "dynamic_templates": [
+      {
+        "entry_name": {
+          "path_match": "name",
+          "mapping": {
+            "type": "text",
+            "analyzer": "text_default",
+            "fields": {
+              "sort": {
+                "type": "icu_collation_keyword",
+                "index": true
+              }
+            }
+          }
+        }
+      },
+      {
+        "research_area": {
+          "path_match": "research_area.name",
+          "mapping": {
+            "type": "text",
+            "analyzer": "text_default",
+            "fields": {
+              "sort": {
+                "type": "icu_collation_keyword",
+                "index": true
+              },
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      {
+        "research_area_en": {
+          "path_match": "research_area_en.name",
+          "mapping": {
+            "type": "text",
+            "analyzer": "text_default",
+            "fields": {
+              "sort": {
+                "type": "icu_collation_keyword",
+                "index": true
+              },
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      {
+        "address": {
+          "path_match": "address",
+          "mapping": {
+            "type": "text",
+            "analyzer": "text_default",
+            "fields": {
+              "sort": {
+                "type": "icu_collation_keyword",
+                "index": true
+              },
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      {
+        "degree": {
+          "path_match": "degree",
+          "mapping": {
+            "type": "text",
+            "analyzer": "text_default",
+            "fields": {
+              "sort": {
+                "type": "icu_collation_keyword",
+                "index": true
+              },
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      {
+        "company": {
+          "path_match": "company",
+          "mapping": {
+            "type": "text",
+            "analyzer": "text_default",
+            "fields": {
+              "sort": {
+                "type": "icu_collation_keyword",
+                "index": true
+              },
+              "keyword": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "other_link": {
+        "type": "keyword"
+      },
+      "gender": {
+        "type": "keyword"
+      },
+      "score": {
+        "type": "float"
+      },
+      "birth": {
+        "type": "keyword"
+      },
+      "phone": {
+        "type": "keyword"
+      },
+      "email": {
+        "type": "keyword"
+      },
+      "link_profile": {
+        "type": "keyword"
+      },
+      "img": {
+        "type": "keyword"
+      },
+      "rank_experts": {
+        "type": "long"
+      },
+      "research_area": {
+        "properties": {
+          "id": {
+            "type": "keyword"
+          }
+        }
+      },
+      "research_area_en": {
+        "properties": {
+          "id": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
