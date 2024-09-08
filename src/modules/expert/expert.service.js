@@ -135,7 +135,7 @@ const getSuggestions = async ({
         size: size - suggestions?.length,
         start
       });
-      console.log(companies);
+      // console.log(companies);
 
       !isEmpty(companies) && companies.map(company => {
         suggestions.push({
