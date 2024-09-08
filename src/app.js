@@ -7,12 +7,15 @@ import dotenv from 'dotenv';
 import routes from './routes/index.js';
 import {initializeMongoConnection} from "./databases/mongodb.js";
 import { initializeElastic } from './databases/elasticsearch.js';
+//cors
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 
 //! init middleware
+app.use(cors());
 app.use(morgan('dev')); //* app.use(morgan('combined'));
 app.use(helmet()); //* che giấu thông tin header, bảo vệ khỏi các cuộc tấn công
 app.use(compression()); //* giảm dung lượng trả về cho client

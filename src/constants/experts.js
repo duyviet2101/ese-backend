@@ -1,5 +1,7 @@
 export const INDEX_ELASTICSEARCH = {
-  experts : 'experts'
+  experts : 'experts',
+  topicsVi: 'topics_vi',
+  topicsEn: 'topics_en',
 };
 
 export const mapFacetFields = {
@@ -21,4 +23,11 @@ export const mapFilterFields = {
 
 export const FACETS_TYPE = {
   degree: 'degree',
+}
+
+export const SUGGESTIONS_TYPES = {
+  name: 'name',
+  topic: 'topic',
+  company: 'company',
+  address: 'address'
 }

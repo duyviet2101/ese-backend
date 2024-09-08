@@ -5,4 +5,6 @@ const router = express.Router();
 
 router.get('/search', ExpertController.searchExpert);
 
+router.get('/suggestions', ExpertController.getSuggestions);
+
 export default router;

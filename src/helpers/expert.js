@@ -210,7 +210,7 @@ export const convertParamsToExpertSearchQuery = (params) => {
 
   if (research_area) {
     addFilter(esQuery, createFieldFilter(mapFilterFields.research_area, research_area));
-    addFilter(esQuery, createFieldFilter(mapFilterFields.research_area_en, research_area));
+    // addFilter(esQuery, createFieldFilter(mapFilterFields.research_area_en, research_area));
   }
 
   if (address) {

@@ -6,6 +6,12 @@ const searchExpert = catchAsync(async (req, res, next) => {
   res.json(data);
 })
 
+const getSuggestions = catchAsync(async (req, res, next) => {
+  const data = await ExpertService.getSuggestions(req?.query);
+  res.json(data);
+})
+
 export default {
-  searchExpert
+  searchExpert,
+  getSuggestions
 }
