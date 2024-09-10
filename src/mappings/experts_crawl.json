@@ -140,60 +140,6 @@
             }
           }
         }
-      },
-      {
-        "book_written": {
-          "path_match": "book_written.title",
-          "mapping": {
-            "type": "text",
-            "analyzer": "text_default",
-            "fields": {
-              "sort": {
-                "type": "icu_collation_keyword",
-                "index": true
-              },
-              "keyword": {
-                "type": "keyword"
-              }
-            }
-          }
-        }
-      },
-      {
-        "researches": {
-          "path_match": "researches.title",
-          "mapping": {
-            "type": "text",
-            "analyzer": "text_default",
-            "fields": {
-              "sort": {
-                "type": "icu_collation_keyword",
-                "index": true
-              },
-              "keyword": {
-                "type": "keyword"
-              }
-            }
-          }
-        }
-      },
-      {
-        "articles": {
-          "path_match": "articles.title",
-          "mapping": {
-            "type": "text",
-            "analyzer": "text_default",
-            "fields": {
-              "sort": {
-                "type": "icu_collation_keyword",
-                "index": true
-              },
-              "keyword": {
-                "type": "keyword"
-              }
-            }
-          }
-        }
       }
     ],
     "properties": {
@@ -238,60 +184,6 @@
         "properties": {
           "id": {
             "type": "keyword"
-          }
-        }
-      },
-      "book_written": {
-        "properties": {
-          "id": {
-            "type": "keyword"
-          },
-          "year": {
-            "type": "keyword"
-          },
-          "role": {
-            "type": "keyword"
-          },
-          "publisher": {
-            "type": "keyword"
-          }
-        }
-      },
-      "researches": {
-        "properties": {
-          "id": {
-              "type": "keyword"
-          },
-          "year": {
-              "type": "keyword"
-          },
-          "role": {
-              "type": "keyword"
-          },
-          "level": {
-              "type": "keyword"
-          },
-          "status": {
-              "type": "keyword"
-          }
-        }
-      },
-      "articles": {
-        "properties": {
-          "id": {
-              "type": "keyword"
-          },
-          "published_in": {
-              "type": "keyword"
-          },
-          "role": {
-              "type": "keyword"
-          },
-          "year": {
-              "type": "keyword"
-          },
-          "type": {
-              "type": "keyword"
           }
         }
       }

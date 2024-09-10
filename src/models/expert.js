@@ -1,6 +1,78 @@
 import mongoose from 'mongoose';
 import mongooseAutoPopulate from 'mongoose-autopopulate';
 
+const BookSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  year: {
+    type: String,
+  },
+  role: {
+    type: String,
+  },
+  publisher: {
+    type: String,
+  },
+}, {
+  _id: false
+});
+
+const ResearchSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  year: {
+    type: String,
+  },
+  role: {
+    type: String,
+  },
+  level: {
+    type: String,
+  },
+  status: {
+    type: String,
+  },
+}, {
+  _id: false
+});
+
+const ArticleSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  published_in: {
+    type: String,
+  },
+  role: {
+    type: String,
+  },
+  year: {
+    type: String,
+  },
+  type: {
+    type: String,
+  },
+}, {
+  _id: false
+});
+
 const ExpertSchema = new mongoose.Schema({
   other_link: {
     type: String,
@@ -78,6 +150,18 @@ const ExpertSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  book_written: {
+    type: [BookSchema],
+    default: [],
+  },
+  researches: {
+    type: [ResearchSchema],
+    default: [],
+  },
+  articles: {
+    type: [ArticleSchema],
+    default: [],
+  },
 }, {
   timestamps: true
 });
@@ -93,6 +177,6 @@ ExpertSchema.statics.findForElastic = function ({
   }).skip(page * batchSize).limit(batchSize);
 }
 
-const Expert = mongoose.model('Expert', ExpertSchema, 'experts');
+const Expert = mongoose.model('Expert', ExpertSchema, 'sdh_crawl');
 
 export default Expert;

@@ -1,4 +1,4 @@
-import {addFilter, addMust, addMustNot} from "../utils/elasticsearch.js";
+import { addFilter, addMust, addMustNot, addShould } from '../utils/elasticsearch.js';
 import {FACETS_TYPE, INDEX_ELASTICSEARCH, mapFilterFields, mapFacetFields} from "../constants/experts.js";
 import { esClient } from '../databases/elasticsearch.js';
 
@@ -162,26 +162,90 @@ export const convertParamsToExpertSearchQuery = (params) => {
     // _source: {
     //   excludes: ['description', 'source']
     // },
-    sort: {
-      rank_experts: 'desc'
-    }
+    // sort: {
+    //   rank_experts: 'desc'
+    // }
   };
 
   const what = params.what;
   if (what) {
+    const queries = what?.split(',')?.map(q => q.trim());
+
+    // const whatQuery = {
+    //   query_string: {
+    //     fields: [
+    //       'name',
+    //       'research_area.name',
+    //       'research_area_en.name',
+    //       'research_area_en._id',
+    //       'research_area._id',
+    //     ],
+    //     query: `*${what}`,
+    //     default_operator: 'AND'
+    //   },
+    // };
+
     const whatQuery = {
-      query_string: {
-        fields: [
-          'name',
-          'research_area.name',
-          'research_area_en.name',
-          'research_area_en._id',
-          'research_area._id'
-        ],
-        query: `*${what}`,
-        default_operator: 'AND'
+      bool: {
+        should: []
       }
     };
+
+    queries.map(q => {
+      const query = {
+        query_string: {
+          fields: [
+            'name',
+            'research_area.name',
+            'research_area_en.name',
+            'research_area_en._id',
+            'research_area._id',
+          ],
+          query: `*${q}`,
+          default_operator: 'AND',
+          boost: 1
+        },
+      };
+
+      whatQuery.bool.should.push(query);
+
+    })
+
+    whatQuery.bool.should.push({
+      bool: {
+        must: queries.map(q => ({
+          bool: {
+            should: [
+              {
+                "match_phrase": {
+                  "researches.title": {
+                    "query": q,
+                    boost: 3
+                  },
+                }
+              },
+              {
+                "match_phrase": {
+                  "book_written.title": {
+                    "query": q,
+                    boost: 3
+                  }
+                }
+              },
+              {
+                "match_phrase": {
+                  "articles.title": {
+                    "query": q,
+                    boost: 3
+                  }
+                }
+              }
+            ]
+          }
+        }))
+      }
+    })
+
     addMust(esQuery, whatQuery);
   }
 
@@ -194,7 +258,8 @@ export const convertParamsToExpertSearchQuery = (params) => {
           'company'
         ],
         query: where,
-        default_operator: 'AND'
+        default_operator: 'AND',
+        boost: 1
       }
     };
     addMust(esQuery, whereQuery);
@@ -296,11 +361,11 @@ export const convertParamsToExpertSearchQuery = (params) => {
       should: {
         function_score: {
           query: esQuery.query,
-          field_value_factor: {
-            field: 'rank_experts',
-            factor: 1,
-            missing: 1
-          },
+          // field_value_factor: {
+          //   field: 'rank_experts',
+          //   factor: 1,
+          //   missing: 1
+          // },
           boost_mode: 'sum'
         }
       }
