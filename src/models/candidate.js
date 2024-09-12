@@ -17,7 +17,7 @@ const candidateSchema = new mongoose.Schema({
     trim: true
   },
   birth: {
-    type: String,
+    type: Date,
     required: true
   },
   gender: {
