@@ -6,6 +6,12 @@ const createThesis = catchAsync(async (req, res, next) => {
   return res.status(201).json({ data });
 })
 
+const getThesis = catchAsync(async (req, res, next) => {
+  const data = await ThesisService.getThesis(req.query);
+  return res.status(200).json(data);
+});
+
 export default {
-  createThesis
+  createThesis,
+  getThesis
 }

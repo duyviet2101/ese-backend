@@ -39,6 +39,59 @@ const createThesis = async (data) => {
   }
 }
 
+const getThesis = async ({
+  page = 1,
+  pageSize = 10,
+  q = '',
+  sort = 'defense_date',
+  fromDefDate,
+  toDefDate,
+  status
+}) => {
+  const skip = (page - 1) * pageSize;
+  const query = {
+    $or: [{
+      title: {
+        $regex: q,
+        $options: 'i'
+      }
+    }]
+  };
+  if (fromDefDate) {
+    query.defense_date = {
+      $gte: moment(fromDefDate, 'DD/MM/YYYY').toDate()
+    }
+  }
+  if (toDefDate) {
+    query.defense_date = {
+      ...query.defense_date,
+      $lte: moment(toDefDate, 'DD/MM/YYYY').toDate()
+    }
+  }
+  if (status) {
+    query['committees.status'] = status;
+  }
+
+  const total = await Thesis.countDocuments(query);
+  const items = await Thesis.find(query)
+    .populate('candidate')
+    .sort({
+      [sort]: -1
+    })
+    .skip(skip)
+    .limit(pageSize);
+
+  return {
+    items,
+    pagination: {
+      page,
+      pageSize,
+      total
+    }
+  };
+}
+
 export default {
-  createThesis
+  createThesis,
+  getThesis
 }

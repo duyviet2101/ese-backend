@@ -213,7 +213,7 @@ export const convertParamsToExpertSearchQuery = (params) => {
 
     whatQuery.bool.should.push({
       bool: {
-        must: queries.map(q => ({
+        should: queries.map(q => ({
           bool: {
             should: [
               {

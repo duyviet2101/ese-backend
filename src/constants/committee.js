@@ -36,15 +36,15 @@ export const CONTACT_STATUSES = {
 }
 
 export const COMMITTEE_STATUSES = {
-  NOT_STARTED: {
+  not_started: {
     name: 'Chưa bắt đầu',
     value: 'not_started',
   },
-  WAITING: {
+  waiting: {
     name: 'Đang tìm kiếm',
     value: 'waiting',
   },
-  DONE: {
+  done: {
     name: 'Đã chốt hội đồng',
     value: 'done',
   }

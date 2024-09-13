@@ -67,7 +67,7 @@ const CommitteesSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    default: COMMITTEE_STATUSES.NOT_STARTED.value,
+    default: COMMITTEE_STATUSES.not_started.value,
   }
 }, {
   _id: false
@@ -119,7 +119,7 @@ const thesisSchema = new mongoose.Schema({
       waiting_list: [],
       approved_list: [],
       rejected_list: [],
-      status: COMMITTEE_STATUSES.NOT_STARTED.value,
+      status: COMMITTEE_STATUSES.not_started.value,
     }
   }
 }, {
