@@ -7,7 +7,9 @@ const CommitteeSchema = new mongoose.Schema({
   expert: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Expert',
-    autopopulate: true,
+    autopopulate: {
+      select: "name email phone"
+    },
   },
   contact_status: {
     type: String,
@@ -52,17 +54,10 @@ const CommitteesSchema = new mongoose.Schema({
       [COMMITTEE_ROLES.REVIEWER.value]: COMMITTEE_ROLES.REVIEWER.defaultCount,
     }
   },
-  waiting_list: {
+  list: {
     type: [CommitteeSchema],
-    default: []
-  },
-  approved_list: {
-    type: [CommitteeSchema],
-    default: []
-  },
-  rejected_list: {
-    type: [CommitteeSchema],
-    default: []
+    required: true,
+    default: [],
   },
   status: {
     type: String,

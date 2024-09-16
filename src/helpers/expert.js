@@ -211,40 +211,82 @@ export const convertParamsToExpertSearchQuery = (params) => {
 
     })
 
+    const matchPhraseQueriesShould = queries.map(q => ({
+      bool: {
+        should: [
+          {
+            "match_phrase": {
+              "researches.title": {
+                "query": q,
+                boost: 2
+              },
+            }
+          },
+          {
+            "match_phrase": {
+              "book_written.title": {
+                "query": q,
+                boost: 2
+              }
+            }
+          },
+          {
+            "match_phrase": {
+              "articles.title": {
+                "query": q,
+                boost: 2
+              }
+            }
+          }
+        ]
+      }
+    }));
+    const matchPhraseQueriesMust = queries.map(q => ({
+      bool: {
+        should: [
+          {
+            "match_phrase": {
+              "researches.title": {
+                "query": q,
+                boost: 3
+              },
+            }
+          },
+          {
+            "match_phrase": {
+              "book_written.title": {
+                "query": q,
+                boost: 3
+              }
+            }
+          },
+          {
+            "match_phrase": {
+              "articles.title": {
+                "query": q,
+                boost: 3
+              }
+            }
+          }
+        ]
+      }
+    }));
     whatQuery.bool.should.push({
       bool: {
-        should: queries.map(q => ({
-          bool: {
-            should: [
-              {
-                "match_phrase": {
-                  "researches.title": {
-                    "query": q,
-                    boost: 3
-                  },
-                }
-              },
-              {
-                "match_phrase": {
-                  "book_written.title": {
-                    "query": q,
-                    boost: 3
-                  }
-                }
-              },
-              {
-                "match_phrase": {
-                  "articles.title": {
-                    "query": q,
-                    boost: 3
-                  }
-                }
-              }
-            ]
+        should: [
+          {
+            bool: {
+              should: matchPhraseQueriesShould
+            }
+          },
+          {
+            bool: {
+              must: matchPhraseQueriesMust
+            }
           }
-        }))
+        ]
       }
-    })
+    });
 
     addMust(esQuery, whatQuery);
   }

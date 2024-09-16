@@ -7,4 +7,10 @@ router.post('/', ThesisController.createThesis);
 
 router.get('/', ThesisController.getThesis);
 
+router.get('/:id', ThesisController.getThesisById);
+
+router.patch('/:id', ThesisController.updateThesis);
+
+router.post("/:id/committees", ThesisController.addCommittee);
+
 export default router;
