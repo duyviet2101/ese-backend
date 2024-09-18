@@ -142,6 +142,15 @@ const updateThesis = async (id, data) => {
     data.defense_date = moment(data.defense_date, 'DD/MM/YYYY').toDate();
   }
 
+  if (data?.committees?.roles_structure) {
+    for (const [role, limit] of Object.entries(data.committees.roles_structure)) {
+      const countCurr = thesis.committees.list.filter((item) => item.role === role && item.contact_status === CONTACT_STATUSES.ACCEPTED.value).length;
+      if (countCurr > limit) {
+        throw new BadRequestError('Số lượng giới hạn không phù hợp với danh sách hội đồng!');
+      }
+    }
+  }
+
   const newThesis = await Thesis.findOneAndUpdate(
     {
       _id: id
@@ -205,9 +214,17 @@ const updateContactStatus = async (id, data) => {
     throw new BadRequestError('Không tìm thấy luận án!');
   }
 
+  const roles_structure = thesis.committees.roles_structure;
+  console.log(roles_structure)
+
   for (const [expert, contact_status] of Object.entries(data)) {
     const committee = thesis.committees.list.find((item) => item.expert.toString() === expert);
     if (committee) {
+      const limit = roles_structure[committee.role];
+      const countCurr = thesis.committees.list.filter((item) => item.role === committee.role && item.contact_status === CONTACT_STATUSES.ACCEPTED.value).length;
+      if (contact_status === CONTACT_STATUSES.ACCEPTED.value && countCurr >= limit) {
+        throw new BadRequestError('Đã đủ số lượng!');
+      }
       committee.contact_status = contact_status;
     }
   }
