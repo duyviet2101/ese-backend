@@ -1,7 +1,7 @@
 import { Candidate, Thesis } from '../../models/index.js';
 import { BadRequestError } from '../../exception/errorResponse.js';
 import moment from 'moment';
-import { CONTACT_STATUSES } from '../../constants/committee.js';
+import { COMMITTEE_STATUSES, CONTACT_STATUSES } from '../../constants/committee.js';
 import { updateNestedObjectParser } from '../../helpers/mongoose.js';
 
 const createThesis = async (data) => {
@@ -147,6 +147,15 @@ const updateThesis = async (id, data) => {
       const countCurr = thesis.committees.list.filter((item) => item.role === role && item.contact_status === CONTACT_STATUSES.ACCEPTED.value).length;
       if (countCurr > limit) {
         throw new BadRequestError('Số lượng giới hạn không phù hợp với danh sách hội đồng!');
+      }
+    }
+  }
+
+  if (data?.committees?.status === COMMITTEE_STATUSES.done.value) {
+    for (const [role, limit] of Object.entries(thesis.committees.roles_structure)) {
+      const countCurr = thesis.committees.list.filter((item) => item.role === role && item.contact_status === CONTACT_STATUSES.ACCEPTED.value).length;
+      if (countCurr !== limit) {
+        throw new BadRequestError('Chưa thoả mãn cấu trúc hội đồng!');
       }
     }
   }
