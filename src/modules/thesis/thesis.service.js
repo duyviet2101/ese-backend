@@ -113,7 +113,7 @@ const updateThesis = async (id, data) => {
     },
     {},
     { autopopulate: false }
-  );
+  ).lean();
 
   if (!thesis) {
     throw new BadRequestError('Không tìm thấy luận án!');
@@ -154,6 +154,7 @@ const updateThesis = async (id, data) => {
   if (data?.committees?.status === COMMITTEE_STATUSES.done.value) {
     for (const [role, limit] of Object.entries(thesis.committees.roles_structure)) {
       const countCurr = thesis.committees.list.filter((item) => item.role === role && item.contact_status === CONTACT_STATUSES.ACCEPTED.value).length;
+
       if (countCurr < limit) {
         throw new BadRequestError('Chưa thoả mãn cấu trúc hội đồng!');
       }
