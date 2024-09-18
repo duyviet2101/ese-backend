@@ -11,7 +11,13 @@ const getSuggestions = catchAsync(async (req, res, next) => {
   res.json(data);
 })
 
+const getExpertById = catchAsync(async (req, res, next) => {
+  const data = await ExpertService.getExpertById(req?.params?.id);
+  res.json(data);
+})
+
 export default {
   searchExpert,
-  getSuggestions
+  getSuggestions,
+  getExpertById
 }

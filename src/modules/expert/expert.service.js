@@ -168,7 +168,12 @@ const getSuggestions = async ({
   return suggestions;
 }
 
+const getExpertById = async (id) => {
+  return Expert.findOne({ _id: id });
+}
+
 export default {
   searchExpert,
-  getSuggestions
+  getSuggestions,
+  getExpertById
 }

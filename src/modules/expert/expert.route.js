@@ -7,4 +7,6 @@ router.get('/search', ExpertController.searchExpert);
 
 router.get('/suggestions', ExpertController.getSuggestions);
 
+router.get('/:id', ExpertController.getExpertById);
+
 export default router;
