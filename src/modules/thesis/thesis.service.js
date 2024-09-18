@@ -2,19 +2,23 @@ import { Candidate, Thesis } from '../../models/index.js';
 import { BadRequestError } from '../../exception/errorResponse.js';
 import moment from 'moment';
 import { CONTACT_STATUSES } from '../../constants/committee.js';
+import { updateNestedObjectParser } from '../../helpers/mongoose.js';
 
 const createThesis = async (data) => {
   try {
-
     if (data?.candidate?.birth) {
       data.candidate.birth = moment(data.candidate.birth, 'DD/MM/YYYY').toDate();
     }
-    const candidate = await Candidate.findOneAndUpdate({
-      email: data?.candidate?.email
-    }, data.candidate, {
-      upsert: true,
-      new: true
-    });
+    const candidate = await Candidate.findOneAndUpdate(
+      {
+        email: data?.candidate?.email
+      },
+      data.candidate,
+      {
+        upsert: true,
+        new: true
+      }
+    );
 
     delete data.candidate;
 
@@ -38,7 +42,7 @@ const createThesis = async (data) => {
   } catch (error) {
     throw new BadRequestError(error);
   }
-}
+};
 
 const getThesis = async ({
   page = 1,
@@ -51,23 +55,25 @@ const getThesis = async ({
 }) => {
   const skip = (page - 1) * pageSize;
   const query = {
-    $or: [{
-      title: {
-        $regex: q,
-        $options: 'i'
+    $or: [
+      {
+        title: {
+          $regex: q,
+          $options: 'i'
+        }
       }
-    }]
+    ]
   };
   if (fromDefDate) {
     query.defense_date = {
       $gte: moment(fromDefDate, 'DD/MM/YYYY').toDate()
-    }
+    };
   }
   if (toDefDate) {
     query.defense_date = {
       ...query.defense_date,
       $lte: moment(toDefDate, 'DD/MM/YYYY').toDate()
-    }
+    };
   }
   if (status) {
     query['committees.status'] = status;
@@ -90,7 +96,7 @@ const getThesis = async ({
       total
     }
   };
-}
+};
 
 const getThesisById = async (id) => {
   const thesis = await Thesis.findById(id);
@@ -98,42 +104,64 @@ const getThesisById = async (id) => {
     throw new BadRequestError('Không tìm thấy luận án!');
   }
   return thesis;
-}
+};
 
 const updateThesis = async (id, data) => {
-  try {
+  const thesis = await Thesis.findOne(
+    {
+      _id: id
+    },
+    {},
+    { autopopulate: false }
+  );
+
+  if (!thesis) {
+    throw new BadRequestError('Không tìm thấy luận án!');
+  }
+
+  if (data?.candidate) {
     if (data?.candidate?.birth) {
       data.candidate.birth = moment(data.candidate.birth, 'DD/MM/YYYY').toDate();
     }
-    const candidate = await Candidate.findOneAndUpdate({
-      email: data?.candidate?.email
-    }, data.candidate, {
-      upsert: true,
-      new: true
-    });
+    const candidate = await Candidate.findOneAndUpdate(
+      {
+        email: data?.candidate?.email
+      },
+      data.candidate,
+      {
+        upsert: true,
+        new: true
+      }
+    );
 
     delete data.candidate;
-
-    if (data?.defense_date) {
-      data.defense_date = moment(data.defense_date, 'DD/MM/YYYY').toDate();
-    }
-    const thesis = await Thesis.findByIdAndUpdate(id, {
-      ...data,
-      candidate: candidate._id
-    }, {
-      new: true
-    });
-
-    return thesis;
-  } catch (error) {
-    throw new BadRequestError(error);
+    data.candidate = candidate._id;
   }
-}
+
+  if (data?.defense_date) {
+    data.defense_date = moment(data.defense_date, 'DD/MM/YYYY').toDate();
+  }
+
+  const newThesis = await Thesis.findOneAndUpdate(
+    {
+      _id: id
+    },
+    updateNestedObjectParser(data),
+    {
+      new: true
+    }
+  );
+  return newThesis;
+};
 
 const addCommittee = async (id, data) => {
-  const thesis = await Thesis.findOne({
-    _id: id
-  }, {}, {autopopulate: false});
+  const thesis = await Thesis.findOne(
+    {
+      _id: id
+    },
+    {},
+    { autopopulate: false }
+  );
   if (!thesis) {
     throw new BadRequestError('Không tìm thấy luận án!');
   }
@@ -141,11 +169,7 @@ const addCommittee = async (id, data) => {
   const { committees = [] } = data;
   const current = thesis.committees.list;
   committees.map((committee) => {
-    const {
-      role,
-      expert,
-      contact_status = CONTACT_STATUSES.NOT_CONTACTED.value
-    } = committee;
+    const { role, expert, contact_status = CONTACT_STATUSES.NOT_CONTACTED.value } = committee;
     if (!role || !expert || !contact_status) {
       throw new BadRequestError('Thiếu thông tin!');
     }
@@ -155,8 +179,7 @@ const addCommittee = async (id, data) => {
       //update
       exist.role = role;
       exist.contact_status = contact_status;
-    }
-    else {
+    } else {
       //add
       current.push({
         expert,
@@ -167,12 +190,58 @@ const addCommittee = async (id, data) => {
   });
 
   await thesis.save();
-}
+};
+
+const updateContactStatus = async (id, data) => {
+  const thesis = await Thesis.findOne(
+    {
+      _id: id
+    },
+    {},
+    { autopopulate: false }
+  );
+
+  if (!thesis) {
+    throw new BadRequestError('Không tìm thấy luận án!');
+  }
+
+  for (const [expert, contact_status] of Object.entries(data)) {
+    const committee = thesis.committees.list.find((item) => item.expert.toString() === expert);
+    if (committee) {
+      committee.contact_status = contact_status;
+    }
+  }
+
+  await thesis.save();
+  return thesis;
+};
+
+const deleteCommittee = async ({ id, expertIds }) => {
+
+  const thesis = await Thesis.findOne(
+    {
+      _id: id
+    },
+    {},
+    { autopopulate: false }
+  );
+
+  if (!thesis) {
+    throw new BadRequestError('Không tìm thấy luận án!');
+  }
+
+  const current = thesis.committees.list;
+  thesis.committees.list = current.filter((item) => !expertIds.includes(item.expert.toString()));
+  await thesis.save();
+  return thesis;
+};
 
 export default {
   createThesis,
   getThesis,
   getThesisById,
   updateThesis,
-  addCommittee
-}
+  addCommittee,
+  updateContactStatus,
+  deleteCommittee
+};

@@ -26,10 +26,25 @@ const addCommittee = catchAsync(async (req, res, next) => {
   return res.status(200).json(data);
 });
 
+const updateContactStatus = catchAsync(async (req, res, next) => {
+  const data = await ThesisService.updateContactStatus(req.params.id, req.body);
+  return res.status(200).json(data);
+});
+
+const deleteCommittee = catchAsync(async (req, res, next) => {
+  await ThesisService.deleteCommittee({
+    id: req.params.id,
+    expertIds: req?.query?.ids?.split(',')
+  });
+  return res.status(204).send();
+});
+
 export default {
   createThesis,
   getThesis,
   getThesisById,
   updateThesis,
-  addCommittee
+  addCommittee,
+  updateContactStatus,
+  deleteCommittee
 }

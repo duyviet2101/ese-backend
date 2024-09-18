@@ -7,9 +7,7 @@ const CommitteeSchema = new mongoose.Schema({
   expert: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Expert',
-    autopopulate: {
-      select: "name email phone"
-    },
+    autopopulate: true
   },
   contact_status: {
     type: String,

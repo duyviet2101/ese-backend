@@ -27,7 +27,15 @@ const candidateSchema = new mongoose.Schema({
   company: {
     type: String,
     required: true
-  }
+  },
+  school: {
+    type: String,
+    required: true
+  },
+  major: {
+    type: String,
+    required: true
+  },
 }, {
   timestamps: true
 });
