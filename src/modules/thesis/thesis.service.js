@@ -154,7 +154,7 @@ const updateThesis = async (id, data) => {
   if (data?.committees?.status === COMMITTEE_STATUSES.done.value) {
     for (const [role, limit] of Object.entries(thesis.committees.roles_structure)) {
       const countCurr = thesis.committees.list.filter((item) => item.role === role && item.contact_status === CONTACT_STATUSES.ACCEPTED.value).length;
-      if (countCurr !== limit) {
+      if (countCurr < limit) {
         throw new BadRequestError('Chưa thoả mãn cấu trúc hội đồng!');
       }
     }
@@ -208,6 +208,8 @@ const addCommittee = async (id, data) => {
   });
 
   await thesis.save();
+
+  return await Thesis.findOne({ _id: id });
 };
 
 const updateContactStatus = async (id, data) => {
@@ -239,7 +241,7 @@ const updateContactStatus = async (id, data) => {
   }
 
   await thesis.save();
-  return thesis;
+  return await Thesis.findOne({ _id: id });
 };
 
 const deleteCommittee = async ({ id, expertIds }) => {
@@ -256,10 +258,14 @@ const deleteCommittee = async ({ id, expertIds }) => {
     throw new BadRequestError('Không tìm thấy luận án!');
   }
 
+  if (thesis.committees.status === COMMITTEE_STATUSES.done.value) {
+    throw new BadRequestError('Hội đồng đã hoàn thành, không thể xóa!');
+  }
+
   const current = thesis.committees.list;
   thesis.committees.list = current.filter((item) => !expertIds.includes(item.expert.toString()));
   await thesis.save();
-  return thesis;
+  return await Thesis.findOne({ _id: id });
 };
 
 export default {
