@@ -225,9 +225,11 @@ const updateContactStatus = async (id, data) => {
   if (!thesis) {
     throw new BadRequestError('Không tìm thấy luận án!');
   }
+  if (thesis.committees.status === COMMITTEE_STATUSES.done.value) {
+    throw new BadRequestError('Hội đồng đã chốt, không thể thay đổi!');
+  }
 
   const roles_structure = thesis.committees.roles_structure;
-  console.log(roles_structure)
 
   for (const [expert, contact_status] of Object.entries(data)) {
     const committee = thesis.committees.list.find((item) => item.expert.toString() === expert);
